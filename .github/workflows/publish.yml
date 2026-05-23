@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'docs/legal/**'
+      - '.github/workflows/publish.yml'
   workflow_dispatch:
 
 permissions:
@@ -25,19 +26,34 @@ jobs:
       - name: Convert Markdown to HTML
         run: |
           sudo apt-get install -y pandoc
-          mkdir -p _site/technician
+          mkdir -p _site/technician _site/deletion-request
+
           pandoc docs/legal/privacy-policy-technician.md \
             --standalone \
             --metadata title="HomeHeroo Technician — Privacy Policy" \
             --css "https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css" \
             -o _site/technician/index.html
 
+          pandoc docs/legal/deletion-request.md \
+            --standalone \
+            --metadata title="HomeHeroo — Account Deletion Request" \
+            --css "https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css" \
+            -o _site/deletion-request/index.html
+
           cat > _site/index.html <<'EOF'
           <!DOCTYPE html>
           <html><head><meta charset="utf-8">
-          <meta http-equiv="refresh" content="0; url=technician/">
-          <title>HomeHeroo Legal</title></head>
-          <body><a href="technician/">Privacy Policy — HomeHeroo Technician</a></body></html>
+          <title>HomeHeroo Legal</title>
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css">
+          <style>body{max-width:760px;margin:48px auto;padding:0 16px;font-family:system-ui,sans-serif}h1{font-size:20px}ul{padding-left:20px}li{margin:8px 0}</style>
+          </head>
+          <body>
+          <h1>HomeHeroo Legal</h1>
+          <ul>
+            <li><a href="technician/">Privacy Policy — HomeHeroo Technician</a></li>
+            <li><a href="deletion-request/">Account Deletion Request</a></li>
+          </ul>
+          </body></html>
           EOF
 
       - name: Upload Pages artifact
